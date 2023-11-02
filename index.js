@@ -139,49 +139,56 @@ function deleteConfirmation(todoId) {
 
 function displayTodos() {
   const todoList = document.getElementById("todo-list");
-  todoList.innerHTML = "";
+  todoList.innerHTML = ""; // Clear the list first
 
   const todos = getTodosFromLocalStorage();
 
-  todos.forEach((todo) => {
-    const li = document.createElement("li");
+  if (todos.length === 0) {
+    const defaultText = document.createElement("li");
+    defaultText.textContent = "Your todo will go here";
+    defaultText.style.color = "grey";
+    todoList.appendChild(defaultText);
+  } else {
+    todos.forEach((todo) => {
+      const li = document.createElement("li");
 
       const textContainer = document.createElement("div");
-    textContainer.style.margin = "10px 20px "
-    textContainer.style.display = "flex";
-    textContainer.style.justifyContent = "space-between";
+      textContainer.style.margin = "10px 20px";
+      textContainer.style.display = "flex";
+      textContainer.style.justifyContent = "space-between";
 
-    const todoText = document.createElement("span");
-    todoText.textContent = todo.title;
-    todoText.style.flex = "1"; // Make the text take up the available space on the right
+      const todoText = document.createElement("span");
+      todoText.textContent = todo.title;
+      todoText.style.flex = "1"; // Make the text take up the available space on the right
 
-    const iconsContainer = document.createElement("div");
+      const iconsContainer = document.createElement("div");
 
-    const editButton = document.createElement("button");
-    editButton.textContent = "✏️";
-    editButton.classList.add("text-blue-500");
+      const editButton = document.createElement("button");
+      editButton.textContent = "✏️";
+      editButton.classList.add("text-blue-500");
 
-    const deleteButton = document.createElement("button");
-    deleteButton.textContent = "❌";
-    deleteButton.classList.add("ml-2", "text-red-500");
+      const deleteButton = document.createElement("button");
+      deleteButton.textContent = "❌";
+      deleteButton.classList.add("ml-2", "text-red-500");
 
-    editButton.addEventListener("click", () => {
-      editTodo(todo.id);
+      editButton.addEventListener("click", () => {
+        editTodo(todo.id);
+      });
+
+      deleteButton.addEventListener("click", () => {
+        deleteConfirmation(todo.id);
+      });
+
+      iconsContainer.appendChild(editButton);
+      iconsContainer.appendChild(deleteButton);
+
+      textContainer.appendChild(todoText);
+      textContainer.appendChild(iconsContainer);
+
+      li.appendChild(textContainer);
+      todoList.appendChild(li);
     });
-
-    deleteButton.addEventListener("click", () => {
-      deleteConfirmation(todo.id);
-    });
-
-    iconsContainer.appendChild(editButton);
-    iconsContainer.appendChild(deleteButton);
-
-    textContainer.appendChild(todoText);
-    textContainer.appendChild(iconsContainer);
-
-    li.appendChild(textContainer);
-    todoList.appendChild(li);
-  });
+  }
 }
 
 
