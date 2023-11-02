@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Todo App</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <style>
+       body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to left top, #37ff14c8, #7DF9FF, #8A2BE2);
+        }
+
+        #todo-container {
+            width: 80%;
+            max-width: 520px;
+            background: #fff;
+            margin: 100px auto 20px;
+            padding: 40px 30px 70px;
+            border-radius: 10px;
+        }
+
+        #input-button-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #edeef0;
+            border-radius: 30px;
+            padding-left: 20px;
+            margin-bottom: 25px;
+        }
+                @media (max-width: 767px) {
+                    #input-button-container {
+                        flex-direction: column; 
+                        padding: 15px; 
+                        margin-bottom: 15px;
+                        border-radius: 15px;
+                    }
+                }
+
+        #todo-input {
+             flex: 1;
+             border: none;
+             outline: none;
+             background: transparent;
+             padding: 10px;
+             font-weight: 14px;
+        }
+
+        .button {
+           border: none;
+           outline: none;
+           padding: 15px 50px;
+           font-size: 16px;
+           cursor: pointer;
+           border-radius: 40px;
+        }
+        
+        #add-button {
+            background-color: #8A2BE2;
+            color: #fff;
+        }
+
+        #update-button {
+            background-color: #f6e05e;
+            color: #000;
+        }
+        
+    </style>
+</head>
+
+<body>
+    <div id="todo-container" class="mt-20">
+        <div id="input-button-container">
+            <input id="todo-input" type="text" placeholder="Add a new todo">
+            <button onclick="createTodo()" class="button ml-2" id="add-button">Add Todo</button>
+            <button onclick="updateTodo()" class="button ml-2 hidden" id="update-button">Update</button>
+        </div>
+        <ul id="todo-list" class="mt-4"></ul>
+    </div>
+    <script src="index.js"></script>
+</body>
+
+</html>
