@@ -18,15 +18,12 @@ function saveTodosToLocalStorage(todos) {
   localStorage.setItem(DB_NAME, JSON.stringify(todos));
 }
 
+//create
 function createTodo() {
   const todoInput = document.querySelector("#todo-input");
 
   if (todoInput.value.trim() === "") {
-    Swal.fire({
-      title: "Oops...",
-      text: "Please enter a valid todo!",
-      icon: "warning",
-    });
+    showWarning("Please enter a valid todo!");
     return;
   }
 
@@ -36,7 +33,7 @@ function createTodo() {
     created_at: new Date().getTime(),
   };
 
-  let todos = getTodosFromLocalStorage();
+  const todos = getTodosFromLocalStorage();
   todos.push(newTodo);
   saveTodosToLocalStorage(todos);
 
@@ -44,9 +41,11 @@ function createTodo() {
   displayTodos();
 }
 
+//update
 function editTodo(todoId) {
-  const todos = getTodosFromLocalStorage();
-  const todoToEdit = todos.find((todo) => todo.id === todoId);
+  const todoToEdit = getTodosFromLocalStorage().find(
+    (todo) => todo.id === todoId
+  );
 
   if (todoToEdit) {
     const todoInput = document.querySelector("#todo-input");
@@ -63,16 +62,14 @@ function editTodo(todoId) {
   }
 }
 
+
+//reset
 function updateTodo() {
   const todoInput = document.querySelector("#todo-input").value;
 
   if (editMode) {
     if (todoInput.trim() === "") {
-      Swal.fire({
-        title: "Oops...",
-        text: "Please enter a valid todo!",
-        icon: "warning",
-      });
+      showWarning("Please enter a valid todo!");
       return;
     }
 
@@ -85,55 +82,22 @@ function updateTodo() {
       displayTodos();
     }
 
-    editMode = false;
-    const addButton = document.getElementById("add-button");
-    const updateButton = document.getElementById("update-button");
-
-    updateButton.classList.add("hidden");
-    addButton.classList.remove("hidden");
-    addButton.classList.remove("bg-yellow-500", "hover:bg-yellow-700");
-    addButton.textContent = "Add Todo";
-
-    document.getElementById("todo-input").value = "";
+    resetEditMode();
   }
 }
+
 
 function deleteTodo(todoId) {
-  let todos = getTodosFromLocalStorage();
-  todos = todos.filter((todo) => todo.id !== todoId);
-  saveTodosToLocalStorage(todos);
-  displayTodos();
+  const todos = getTodosFromLocalStorage();
+  const updatedTodos = todos.filter((todo) => todo.id !== todoId);
+  saveTodosToLocalStorage(updatedTodos);
+  displayTodos(); // Refresh the displayed todos after deletion
 }
 
-function createOrUpdateTodo() {
-  const todoInput = document.querySelector("#todo-input");
 
-  if (editMode) {
-    updateTodo(currentEditId, todoInput.value);
-    editMode = false;
-    currentEditId = null;
-    const addButton = document.getElementById("add-button");
-    addButton.textContent = "Add Todo";
-    addButton.classList.remove("bg-yellow-500", "hover:bg-yellow-700");
-  } else {
-    createTodo();
-  }
-  todoInput.value = "";
-}
-
-function deleteConfirmation(todoId) {
-  Swal.fire({
-    title: "Are you sure?",
-    text: "Do you want to delete this todo?",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#d33",
-    cancelButtonColor: "#3085d6",
-    confirmButtonText: "Yes, delete it!",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      deleteTodo(todoId);
-    }
+function deleteTodoAndDisplayConfirmation(todoId) {
+  showDeleteConfirmation(() => {
+    deleteTodo(todoId);
   });
 }
 
@@ -159,30 +123,25 @@ function displayTodos() {
 
       const todoText = document.createElement("span");
       todoText.textContent = todo.title;
-      todoText.style.flex = "1"; // Make the text take up the available space on the right
+
+      const createdDay = document.createElement("span");
+      createdDay.textContent = new Date(todo.created_at).toDateString();
+      createdDay.style.color = "gray";
 
       const iconsContainer = document.createElement("div");
 
-      const editButton = document.createElement("button");
-      editButton.textContent = "✏️";
-      editButton.classList.add("text-blue-500");
-
-      const deleteButton = document.createElement("button");
-      deleteButton.textContent = "❌";
-      deleteButton.classList.add("ml-2", "text-red-500");
-
-      editButton.addEventListener("click", () => {
-        editTodo(todo.id);
-      });
-
-      deleteButton.addEventListener("click", () => {
-        deleteConfirmation(todo.id);
-      });
+      const editButton = createButton("✏️", "text-blue-500", () =>
+        editTodo(todo.id)
+      );
+      const deleteButton = createButton("❌", "text-red-500", () =>
+        deleteTodoAndDisplayConfirmation(todo.id)
+      );
 
       iconsContainer.appendChild(editButton);
       iconsContainer.appendChild(deleteButton);
 
       textContainer.appendChild(todoText);
+      textContainer.appendChild(createdDay);
       textContainer.appendChild(iconsContainer);
 
       li.appendChild(textContainer);
@@ -192,7 +151,64 @@ function displayTodos() {
 }
 
 
+function resetEditMode() {
+  editMode = false;
+  currentEditId = null;
+
+  const addButton = document.getElementById("add-button");
+  const updateButton = document.getElementById("update-button");
+
+  updateButton.classList.add("hidden");
+  addButton.classList.remove("hidden");
+  addButton.classList.remove("bg-yellow-500", "hover:bg-yellow-700");
+  addButton.textContent = "Add Todo";
+
+  document.getElementById("todo-input").value = "";
+}
+
+function showWarning(text) {
+  Swal.fire({
+    title: "Oops...",
+    text: text,
+    icon: "warning",
+  });
+}
+
+function showDeleteConfirmation(callback) {
+  Swal.fire({
+    title: "Are you sure?",
+    text: "Do you want to delete this todo?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Yes, delete it!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      callback();
+    }
+  });
+}
+
+function createButton(text, className, onClickFunction) {
+  const button = document.createElement("button");
+  button.textContent = text;
+
+  // Split className into multiple classes and add them separately
+  const classes = className.split(" ");
+  classes.forEach((cls) => button.classList.add(cls));
+
+  button.addEventListener("click", onClickFunction);
+  return button;
+}
 
 
+function openTodoPreview(todoId) {
+  const selectedTodo = getTodosFromLocalStorage().find(
+    (todo) => todo.id === todoId
+  );
+  const previewURL = `preview.html?todoId=${todoId}`;
+  window.open(previewURL, "_blank");
+}
 
 displayTodos(); // Initial Display of Todos
