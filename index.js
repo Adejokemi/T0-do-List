@@ -18,7 +18,7 @@ function saveTodosToLocalStorage(todos) {
   localStorage.setItem(DB_NAME, JSON.stringify(todos));
 }
 
-//create
+// Create Todo
 function createTodo() {
   const todoInput = document.querySelector("#todo-input");
 
@@ -41,7 +41,7 @@ function createTodo() {
   displayTodos();
 }
 
-//update
+// Update Todo
 function editTodo(todoId) {
   const todoToEdit = getTodosFromLocalStorage().find(
     (todo) => todo.id === todoId
@@ -62,8 +62,7 @@ function editTodo(todoId) {
   }
 }
 
-
-//reset
+// Reset Edit Mode
 function updateTodo() {
   const todoInput = document.querySelector("#todo-input").value;
 
@@ -86,6 +85,12 @@ function updateTodo() {
   }
 }
 
+// Delete Todo
+function deleteTodoAndDisplayConfirmation(todoId) {
+  showDeleteConfirmation(() => {
+    deleteTodo(todoId);
+  });
+}
 
 function deleteTodo(todoId) {
   const todos = getTodosFromLocalStorage();
@@ -94,13 +99,7 @@ function deleteTodo(todoId) {
   displayTodos(); // Refresh the displayed todos after deletion
 }
 
-
-function deleteTodoAndDisplayConfirmation(todoId) {
-  showDeleteConfirmation(() => {
-    deleteTodo(todoId);
-  });
-}
-
+// Function to display todos
 function displayTodos() {
   const todoList = document.getElementById("todo-list");
   todoList.innerHTML = ""; // Clear the list first
@@ -121,8 +120,15 @@ function displayTodos() {
       textContainer.style.display = "flex";
       textContainer.style.justifyContent = "space-between";
 
-      const todoText = document.createElement("span");
-      todoText.textContent = todo.title;
+      const todoLink = document.createElement("a");
+      todoLink.textContent = todo.title;
+      todoLink.href = `preview.html?todoId=${todo.id}`;
+      todoLink.target = "_blank"; // Opens the link in a new tab
+
+      todoLink.onclick = function (event) {
+        event.preventDefault();
+        openTodoPreview(todo.id);
+      };
 
       const createdDay = document.createElement("span");
       createdDay.textContent = new Date(todo.created_at).toDateString();
@@ -140,7 +146,7 @@ function displayTodos() {
       iconsContainer.appendChild(editButton);
       iconsContainer.appendChild(deleteButton);
 
-      textContainer.appendChild(todoText);
+      textContainer.appendChild(todoLink);
       textContainer.appendChild(createdDay);
       textContainer.appendChild(iconsContainer);
 
@@ -149,7 +155,6 @@ function displayTodos() {
     });
   }
 }
-
 
 function resetEditMode() {
   editMode = false;
@@ -201,7 +206,6 @@ function createButton(text, className, onClickFunction) {
   button.addEventListener("click", onClickFunction);
   return button;
 }
-
 
 function openTodoPreview(todoId) {
   const selectedTodo = getTodosFromLocalStorage().find(

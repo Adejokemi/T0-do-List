@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <style>
-       body {
+        body {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -33,33 +33,45 @@
             padding-left: 20px;
             margin-bottom: 25px;
         }
-                @media (max-width: 767px) {
-                    #input-button-container {
-                        flex-direction: column; 
-                        padding: 15px; 
-                        margin-bottom: 15px;
-                        border-radius: 15px;
-                    }
-                }
+
+        @media (max-width: 767px) {
+            #input-button-container {
+                flex-direction: column;
+                padding: 15px;
+                margin-bottom: 15px;
+                border-radius: 15px;
+            }
+        }
 
         #todo-input {
-             flex: 1;
-             border: none;
-             outline: none;
-             background: transparent;
-             padding: 10px;
-             font-weight: 14px;
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            padding: 10px;
+            font-weight: 14px;
         }
 
-        .button {
-           border: none;
-           outline: none;
-           padding: 15px 50px;
-           font-size: 16px;
-           cursor: pointer;
-           border-radius: 40px;
+         #todo-list li {
+            padding: 10px;
+            transition: background-color 0.3s;
+            cursor: pointer;
         }
         
+        #todo-list li:hover {
+            background-color: #f0f0f0;
+        }
+
+
+        .button {
+            border: none;
+            outline: none;
+            padding: 15px 50px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 40px;
+        }
+
         #add-button {
             background-color: #8A2BE2;
             color: #fff;
@@ -69,12 +81,12 @@
             background-color: #f6e05e;
             color: #000;
         }
-        
     </style>
 </head>
 
 <body>
     <div id="todo-container" class="mt-20">
+        <h1 class="text-3xl text-blue-900 text-center mb-10 font-bold">CheckMate</h1>
         <div id="input-button-container">
             <input id="todo-input" type="text" placeholder="Add a new todo">
             <button onclick="createTodo()" class="button ml-2" id="add-button">Add Todo</button>
